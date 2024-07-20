@@ -8,6 +8,7 @@ from datetime import datetime
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 from vk_api import VkUpload
+import threading
 
 # Ваш токен доступа
 TOKEN = 'vk1.a.goTp9VaoSbQd4h8S9r-y2oItpxs1xgekIJZgTI8ga3_tjcQ2oOImL0kZnV2pqrTuRLwPTlDOvPu3LOC8ne8AZIYu0WGGldgDotbwXvX_3rUiLTdW2UCoWNaSZ_h8NBojnlv6BycS5KbeTO8eQZsk5Xp0rDa5Hz79y4w6l7z_NE8e22t7caZToyRCB3xknZePpZk-CKRH09Do9MmZ5VCQIg'
@@ -188,5 +189,21 @@ def main():
         handle_message(event)
 
 
+def keep_alive():
+    while True:
+        try:
+            # Отправляем запрос к VK API, чтобы проверить соединение
+            vk.groups.getById(group_id=201784905)
+            time.sleep(25 * 60)  # Отправляем запрос каждые 25 минут
+        except Exception as e:
+            print(f"Ошибка keep-alive: {e}")
+            print(traceback.format_exc())
+            time.sleep(5)
+
 if __name__ == '__main__':
-    main()
+    # Запускаем поток с keep-alive запросами
+    keep_alive_thread = threading.Thread(target=keep_alive)
+    keep_alive_thread.daemon = True  # Делаем поток фоновым
+    keep_alive_thread.start()
+
+    start_longpoll()
