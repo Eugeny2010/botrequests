@@ -205,5 +205,4 @@ if __name__ == '__main__':
     keep_alive_thread = threading.Thread(target=keep_alive)
     keep_alive_thread.daemon = True  # Делаем поток фоновым
     keep_alive_thread.start()
-
-    start_longpoll()
+    main()
